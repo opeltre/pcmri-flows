@@ -1,0 +1,38 @@
+#controls span {
+    display: inline-block;
+    width: 5em;
+}
+#controls > * {
+    padding: 2px;
+}
+#controls {
+    padding: 1em;
+    font-size: 0.8em;
+}
+#controls input {
+    width: 3em;
+    text-align: right;
+    border: 1px solid #feb;
+}
+
+/* tags */
+
+#tags button {
+    padding: 4px;
+    margin:  2px;
+    width: 4em;
+}
+#seek button {
+    margin: 3px;
+    width: 6em;
+}
+
+/* flex */ 
+
+.flex-h {
+    flex-flow: row;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+}
+
