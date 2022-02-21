@@ -46,8 +46,9 @@ seek = html.Div(id="seek", children=[
 btns = html.Div(id="btns", children=[tags, seek])
 
 keydiv = html.Div(id='key', children=f'b*')
+agediv = html.Div(id='age', children='-1')
 tagdiv = html.Div(id='tag', children='good')
-info = html.Div(id="info", children=[tagdiv, keydiv])
+info = html.Div(id="info", children=[tagdiv, keydiv, agediv])
 
 #--- Layout --- 
 
@@ -63,6 +64,7 @@ app.layout = html.Div(children=[
 @app.callback(
     Output('segments', 'figure'),
     Output('volumes', 'figure'),
+    Output('age', 'children'),
     Input('key', 'children'),
     Input('n-pulses', 'value'))
 def update_exam(key, n):
@@ -72,12 +74,15 @@ def update_exam(key, n):
     flows = file.flows()
     flows *= torch.sign(flows.mean(dim=[1])[:,None])
     aq = file.read('aqueduc')[0]
+    age = file.age()
+    print(age)
     try:
         Npulses = int(n) 
     except:
         Npulses = 1
     return [fig_flow(flows, Npulses, aqueduc=aq, T=T), 
-            fig_vol(flows, Npulses, T)]
+            fig_vol(flows, Npulses, T),
+            f'age: {age}']
 
 @app.callback(
     Output('tag', 'children'),

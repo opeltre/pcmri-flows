@@ -121,8 +121,11 @@ class File:
             def year (line): 
                 match = re.search(r'\d{4}', line)
                 return int(match.group(0)) if match else 0
-
-            with open(path(info), "r") as f:
+            
+            info = "general-informations.txt"
+            info_path = os.path.join(self.path, info)
+            
+            with open(info_path, "r") as f:
                 l = f.readlines()
                 return year(l[3]) - year(l[4])
         except:
