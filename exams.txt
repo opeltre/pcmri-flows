@@ -1,0 +1,24 @@
+2386f6ebd3      # brain volume - csf volume =~ 0
+                # great vascular compliance
+
+23743cb133      # Vol_intra << Vol_extra
+                # F_sin << F_jug 
+                # volume absorbed by veinous site contraction?
+
+211cc7a1        # Vol_intra =~ Vol_extra
+                # No vessel compliance?
+
+237dd7dac7      # F_sin >> F_jug
+                # F_ci-intra = F_ci-extra
+                # Tight brain?
+                # Yet Vol_intra << Vol_extra
+                # Veins inflate more than brain
+
+e5c859b         # F_ci-intra =~ F_ci-extra
+                # F_sin =~ F_jug
+                # Tight vessels
+                # IVC =~ 1.6 mL
+
+4bb42db1c       # F_aq high
+                # tight arteries
+
