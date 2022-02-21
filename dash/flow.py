@@ -9,23 +9,19 @@ import torch
 import json
 from os import path 
 from glob import glob
-from graphs import fig_pulses, fig_raw, fig_spectrum
+from graphs import fig_flow, fig_vol
 
 from pcmri import Dataset
 
 #--- Flow pulses ---
 db = Dataset('full')
 
-def pulse_keys(tag):
-    return [k for k, tk in db_tags.items()\
-              if ["good", "noisy", "bad"][tk] == tag]
-
 #--- State ---
 global keys
+keys    = db.ls()
 global index
 tag     = "good" 
-keys    = pulse_keys(tag)
-index   = 0
+index   = 1 
 
 #--- app ---
 app = dash.Dash(__name__)
@@ -35,7 +31,7 @@ app = dash.Dash(__name__)
 controls = html.Div(id="controls", children=[
     html.Div(children=[
         html.Span(children='Pulses: '),
-        dcc.Input(id='n-pulses', value=12)
+        dcc.Input(id='n-pulses', value=3)
     ])
 ])
 
@@ -49,7 +45,7 @@ seek = html.Div(id="seek", children=[
     html.Button(id="next", children=">")])
 btns = html.Div(id="btns", children=[tags, seek])
 
-keydiv = html.Div(id='key', children=f'inf_20160913115100_INF2')
+keydiv = html.Div(id='key', children=f'b*')
 tagdiv = html.Div(id='tag', children='good')
 info = html.Div(id="info", children=[tagdiv, keydiv])
 
@@ -58,25 +54,30 @@ info = html.Div(id="info", children=[tagdiv, keydiv])
 app.layout = html.Div(children=[
     html.Div(className="flex-h", 
              children=[controls, btns, info]),
-    dcc.Graph(id='segments')
+    dcc.Graph(id='segments'),
+    dcc.Graph(id='volumes')
 ])
 
 #--- Callbacks ---
 
 @app.callback(
     Output('segments', 'figure'),
+    Output('volumes', 'figure'),
     Input('key', 'children'),
     Input('n-pulses', 'value'))
 def update_exam(key, n):
-    flows = db.get(key).flow()
-    flows *= torch.sign(torch.mean([1]))
-    print(flows)
-    pulses = data["pulses"]
+    file  = db.get(key)
+    T = file.read('c2-c3', ['time'])[0][-1]
+    print(file)
+    flows = file.flows()
+    flows *= torch.sign(flows.mean(dim=[1])[:,None])
+    aq = file.read('aqueduc')[0]
     try:
         Npulses = int(n) 
     except:
         Npulses = 1
-    return fig_flow(flow, Npulses)
+    return [fig_flow(flows, Npulses, aqueduc=aq, T=T), 
+            fig_vol(flows, Npulses, T)]
 
 @app.callback(
     Output('tag', 'children'),
@@ -88,9 +89,7 @@ def tag_exam(n1, n2, n3):
     print(f"changed: {changed}")
     tag = changed.split(".")[0]
     tag = tag if tag in ["good", "noisy", "bad"] else "good"
-    global keys
-    keys = pulse_keys(tag)
-    return tag
+    return 'good'
 
 @app.callback(
     Output('key', 'children'),
